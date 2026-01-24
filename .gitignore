@@ -1,0 +1,39 @@
+# LibreBooking .gitignore
+
+# Configuration files with sensitive data
+app/config/config.php
+app/.env
+
+# Compiled Smarty templates
+app/tpl_c/*
+!app/tpl_c/.gitkeep
+
+# Upload directories
+app/uploads/*
+!app/uploads/.gitkeep
+
+# Log files
+app/log/*
+!app/log/.gitkeep
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Dependency directories
+app/vendor/
+node_modules/
+
+# OS generated files
+*.log
+*.swp
+*~
+.tmp/
+
+# Database backups
+*.sql.gz
+*.sql.bak
