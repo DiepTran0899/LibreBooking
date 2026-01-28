@@ -398,6 +398,59 @@ class vn_vn extends en_gb
         $strings['InvalidFileType'] = 'Invalid file type. Only allowed: %s';
         // End Camera Feature
         
+        // Zalo Notification
+        $strings['ZaloNotification'] = 'Thông báo Zalo';
+        $strings['SendZaloNotification'] = 'Gửi thông báo Zalo';
+        $strings['NotifyCustomerCheckin'] = 'Thông báo khách vào';
+        $strings['ZaloSendSuccess'] = 'Đã gửi thông báo Zalo thành công';
+        $strings['ZaloSendFailed'] = 'Gửi thông báo Zalo thất bại';
+        $strings['ZaloNotEnabled'] = 'Chức năng thông báo Zalo chưa được kích hoạt';
+        $strings['ZaloSending'] = 'Đang gửi thông báo Zalo...';
+        $strings['ZaloCustomerCheckedIn'] = 'Khách đã check-in';
+        $strings['CustomerCheckin'] = 'Khách vào';
+        $strings['CustomerCheckout'] = 'Khách ra';
+        
+        // Zalo Admin Config
+        $strings['ZaloConfiguration'] = 'Cấu hình Zalo';
+        $strings['ManageZalo'] = 'Quản lý Zalo';
+        $strings['GeneralSettings'] = 'Cài đặt chung';
+        $strings['EnableZaloNotifications'] = 'Bật thông báo Zalo';
+        $strings['EnableZaloNotificationsHelp'] = 'Kích hoạt tính năng gửi thông báo qua Zalo';
+        $strings['RecipientType'] = 'Loại người nhận';
+        $strings['RecipientTypeHelp'] = 'Chọn nhóm (Group) hoặc cá nhân (User)';
+        $strings['RecipientID'] = 'ID người nhận';
+        $strings['RecipientIDHelp'] = 'ID của nhóm hoặc người dùng nhận thông báo';
+        $strings['SaveConfiguration'] = 'Lưu cấu hình';
+        $strings['ConfigurationSavedSuccessfully'] = 'Đã lưu cấu hình thành công';
+        $strings['FailedToSaveConfiguration'] = 'Lưu cấu hình thất bại';
+        $strings['ErrorSavingConfiguration'] = 'Lỗi khi lưu cấu hình';
+        $strings['ZaloLogin'] = 'Đăng nhập Zalo';
+        $strings['CheckingLoginStatus'] = 'Đang kiểm tra trạng thái đăng nhập';
+        $strings['NotLoggedIn'] = 'Chưa đăng nhập';
+        $strings['ZaloLoggedIn'] = 'Đã đăng nhập Zalo thành công';
+        $strings['ScanQRWithZalo'] = 'Quét mã QR bằng ứng dụng Zalo trên điện thoại';
+        $strings['RefreshQRCode'] = 'Làm mới mã QR';
+        $strings['QRCodeNotAvailable'] = 'Mã QR không khả dụng';
+        $strings['FailedToLoadQRCode'] = 'Không thể tải mã QR';
+        $strings['CannotConnectToZaloService'] = 'Không thể kết nối đến dịch vụ Zalo';
+        $strings['HowToGetRecipientID'] = 'Cách lấy ID người nhận';
+        $strings['ForGroup'] = 'Đối với nhóm';
+        $strings['ForUser'] = 'Đối với cá nhân';
+        $strings['ZaloGroupStep1'] = 'Mở Zalo Web: https://chat.zalo.me/';
+        $strings['ZaloGroupStep2'] = 'Click vào nhóm muốn nhận thông báo';
+        $strings['ZaloGroupStep3'] = 'Xem URL trên thanh địa chỉ, copy ID sau /group/';
+        $strings['ZaloUserStep1'] = 'Mở Zalo Web: https://chat.zalo.me/';
+        $strings['ZaloUserStep2'] = 'Click vào người dùng muốn nhận thông báo';
+        $strings['ZaloUserStep3'] = 'Xem URL trên thanh địa chỉ, copy ID sau /u/';
+        $strings['ImportantNotes'] = 'Lưu ý quan trọng';
+        $strings['ZaloNote1'] = 'Chỉ một phiên Zalo Web có thể hoạt động cùng lúc';
+        $strings['ZaloNote2'] = 'Không mở Zalo Web trên trình duyệt khi service đang chạy';
+        $strings['ZaloNote3'] = 'Phiên đăng nhập có thể hết hạn sau vài ngày';
+        $strings['ZaloNote4'] = 'Service cần chạy liên tục để duy trì kết nối';
+        $strings['Saving'] = 'Đang lưu';
+        $strings['Group'] = 'Nhóm';
+        // End Zalo Notification
+        
         $strings['Maximum'] = 'max';
         $strings['NoScheduleAdministratorLabel'] = 'No Schedule Administrator';
         $strings['ScheduleAdministrator'] = 'Schedule Administrator';
