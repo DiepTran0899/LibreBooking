@@ -2,7 +2,11 @@
 
 {block name=header}
     {include file='globalheader.tpl' TitleKey='EditReservationHeading' TitleArgs='' cssFiles='css/schedule.css' printCssFiles='css/reservation.print.css'}
-    <script src="{$Path}scripts/reservation-camera.js?v=1.0" type="text/javascript"></script>
+    <script src="{$Path}scripts/zalo-config.js?v=12.0" type="text/javascript"></script>
+    <script src="{$Path}scripts/reservation-camera.js?v=20.0" type="text/javascript"></script>
+    <script type="text/javascript">
+        var allowedExtensionsList = '{$AllowedAttachmentExtensionsList}';
+    </script>
     <script type="text/javascript">
         var allowedExtensionsList = '{$AllowedAttachmentExtensionsList}';
     </script>
@@ -260,9 +264,20 @@
                                 <button type="button" class="btn btn-primary" id="btnTakePhoto">
                                     <i class="bi bi-camera"></i> {translate key='TakePhoto'}
                                 </button>
-                                <button type="button" class="btn btn-success" id="btnSaveCapturedPhoto" style="display:none;">
-                                    <i class="bi bi-check-circle"></i> {translate key='SavePhoto'}
-                                </button>
+                                
+                                <!-- Zalo Action Buttons (shown after capture) -->
+                                <div id="zaloActionButtons" style="display:none; gap: 8px;">
+                                    <button type="button" class="btn btn-success" id="btnSendCheckIn">
+                                        <i class="bi bi-box-arrow-in-right"></i> Khách vào
+                                    </button>
+                                    <button type="button" class="btn btn-warning" id="btnSendCheckOut">
+                                        <i class="bi bi-box-arrow-left"></i> Khách ra
+                                    </button>
+                                    <button type="button" class="btn btn-info" id="btnSaveOnly">
+                                        <i class="bi bi-save"></i> Chỉ lưu hình
+                                    </button>
+                                </div>
+                                
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{translate key='Close'}</button>
                             </div>
                         </div>

@@ -9,6 +9,8 @@
         cameraStream: null,
         capturedImages: [],
         allowedExtensions: [],
+        currentCapturedImage: null,
+        zaloConfig: {},
         
         /**
          * Initialize the camera module
@@ -16,6 +18,18 @@
         init: function() {
             this.loadAllowedExtensions();
             this.setupEventListeners();
+        },
+        
+        /**
+         * Load Zalo configuration
+         */
+        loadZaloConfig: function() {
+            if (typeof window.ZaloConfig !== 'undefined' && window.ZaloConfig) {
+                this.zaloConfig = window.ZaloConfig;
+            } else {
+                console.warn('[ReservationCamera] Zalo config not found. Zalo features disabled.');
+                this.zaloConfig = { apiUrl: '', apiKey: '', recipientUID: '', recipientGroupID: '' };
+            }
         },
         
         /**
@@ -118,6 +132,19 @@
                 self.saveCapturedPhoto();
             });
 
+            // Zalo send buttons
+            $(document).on('click', '#btnSendCheckIn', function() {
+                self.saveCapturedPhoto('checkin');
+            });
+
+            $(document).on('click', '#btnSendCheckOut', function() {
+                self.saveCapturedPhoto('checkout');
+            });
+
+            $(document).on('click', '#btnSaveOnly', function() {
+                self.saveCapturedPhoto(null);
+            });
+
             // Modal events
             $('#cameraModal').on('shown.bs.modal', function() {
                 self.initCamera();
@@ -214,7 +241,12 @@
             document.getElementById('capturedImageContainer').style.display = 'block';
             document.getElementById('btnTakePhoto').style.display = 'none';
             document.getElementById('btnRetakePhoto').style.display = 'inline-block';
-            document.getElementById('btnSaveCapturedPhoto').style.display = 'inline-block';
+            
+            // Show Zalo action buttons instead of single Save button
+            const zaloButtons = document.getElementById('zaloActionButtons');
+            if (zaloButtons) {
+                zaloButtons.style.display = 'flex';
+            }
             
             this.stopCamera();
         },
@@ -228,15 +260,19 @@
             document.getElementById('capturedImageContainer').style.display = 'none';
             document.getElementById('btnTakePhoto').style.display = 'inline-block';
             document.getElementById('btnRetakePhoto').style.display = 'none';
-            document.getElementById('btnSaveCapturedPhoto').style.display = 'none';
+            
+            const zaloButtons = document.getElementById('zaloActionButtons');
+            if (zaloButtons) {
+                zaloButtons.style.display = 'none';
+            }
             
             this.initCamera();
         },
 
         /**
-         * Save captured photo
+         * Save captured photo (with optional Zalo action)
          */
-        saveCapturedPhoto: function() {
+        saveCapturedPhoto: function(zaloAction) {
             const imageDataUrl = document.getElementById('capturedImage').src;
             const now = new Date();
             const fileName = now.getFullYear() + 
@@ -248,9 +284,17 @@
             
             this.addImageToPreview(imageDataUrl, fileName);
             
+            // Store current image for Zalo sending
+            this.currentCapturedImage = { dataUrl: imageDataUrl, fileName: fileName };
+            
             // Close modal and reset
             $('#cameraModal').modal('hide');
             this.resetCameraModal();
+            
+            // If Zalo action selected, send immediately
+            if (zaloAction && (zaloAction === 'checkin' || zaloAction === 'checkout')) {
+                this.sendToZalo(zaloAction);
+            }
         },
 
         /**
@@ -262,7 +306,12 @@
             document.getElementById('capturedImageContainer').style.display = 'none';
             document.getElementById('btnTakePhoto').style.display = 'inline-block';
             document.getElementById('btnRetakePhoto').style.display = 'none';
-            document.getElementById('btnSaveCapturedPhoto').style.display = 'none';
+            
+            const zaloButtons = document.getElementById('zaloActionButtons');
+            if (zaloButtons) {
+                zaloButtons.style.display = 'none';
+            }
+            
             this.stopCamera();
         },
 
@@ -396,6 +445,146 @@
             });
             
             console.log('Added', this.capturedImages.length, 'images to form');
+        },
+
+        /**
+         * Send image to Zalo with check-in/check-out message
+         */
+        sendToZalo: function(type) {
+            const self = this;
+            
+            if (!this.currentCapturedImage) {
+                alert('Không tìm thấy hình ảnh để gửi');
+                return;
+            }
+            
+            // Validate configuration
+            if (!this.zaloConfig.recipientUID && !this.zaloConfig.recipientGroupID) {
+                alert('Chưa cấu hình người nhận Zalo. Vui lòng liên hệ admin.');
+                return;
+            }
+            
+            // Show loading notification
+            const loadingToast = this.showToast('info', 'Đang gửi tin nhắn Zalo...', 0);
+            
+            // Get reservation info from form
+            const reservationTitle = ($('#reservationTitle').val() || 'Không có tiêu đề').trim();
+            const resourceName = ($('.resourceDetails').first().text() || 'Không rõ').trim();
+            const ownerName = ($('#userName').text() || 'Không rõ').trim();
+            
+            // Prepare message text with reservation details
+            const actionText = type === 'checkin' 
+                ? this.zaloConfig.messages.checkIn.trim()
+                : this.zaloConfig.messages.checkOut.trim();
+            
+            const messageText = actionText + ' ' + new Date().toLocaleString('vi-VN') + '\n📋 Tiêu đề: ' + reservationTitle + '\n🏢 Tài nguyên: ' + resourceName + '\n👤 Người đặt: ' + ownerName;
+            
+            // Convert base64 to Blob
+            this.base64ToBlob(this.currentCapturedImage.dataUrl, function(blob) {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('text', messageText);
+                formData.append('file', blob, self.currentCapturedImage.fileName);
+                
+                // Add recipient
+                if (self.zaloConfig.recipientGroupID) {
+                    formData.append('toGROUPID', self.zaloConfig.recipientGroupID);
+                }
+                if (self.zaloConfig.recipientUID) {
+                    formData.append('toUID', self.zaloConfig.recipientUID);
+                }
+                
+                // Send to Zalo API
+                fetch(self.zaloConfig.apiUrl, {
+                    method: 'POST',
+                    body: formData
+                    // No API key header needed - handled by server session
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    loadingToast.hide();
+                    if (data.success) {
+                        self.showToast('success', '✓ Đã gửi tin nhắn Zalo thành công!', 3000);
+                    } else {
+                        self.showToast('error', 'Lỗi: ' + (data.error || 'Unknown error'), 5000);
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Zalo send error:', error);
+                    loadingToast.hide();
+                    
+                    let errorMsg = 'Lỗi kết nối Zalo API. ';
+                    if (error.message.includes('Failed to fetch')) {
+                        errorMsg += 'Kiểm tra:\n• Zalo server đã chạy?\n• CORS đã cấu hình?\n• URL/API Key đúng?';
+                    } else {
+                        errorMsg += error.message;
+                    }
+                    
+                    self.showToast('error', errorMsg, 8000);
+                });
+            });
+        },
+
+        /**
+         * Show toast notification
+         */
+        showToast: function(type, message, autoHideDuration) {
+            const toastId = 'toast-' + Date.now();
+            const iconMap = {
+                'success': 'bi-check-circle-fill text-success',
+                'error': 'bi-exclamation-triangle-fill text-danger',
+                'info': 'bi-info-circle-fill text-primary'
+            };
+            
+            const toastHtml = 
+                '<div id="' + toastId + '" class="toast align-items-center border-0" role="alert" style="position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px;">' +
+                    '<div class="d-flex">' +
+                        '<div class="toast-body">' +
+                            '<i class="bi ' + iconMap[type] + ' me-2"></i>' +
+                            '<span style="white-space: pre-line;">' + message + '</span>' +
+                        '</div>' +
+                        '<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>' +
+                    '</div>' +
+                '</div>';
+            
+            $('body').append(toastHtml);
+            
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, {
+                autohide: autoHideDuration > 0,
+                delay: autoHideDuration
+            });
+            
+            toast.show();
+            
+            // Auto remove after hide
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+            
+            return toast;
+        },
+
+        /**
+         * Convert base64 data URL to Blob
+         */
+        base64ToBlob: function(dataUrl, callback) {
+            const arr = dataUrl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            
+            callback(new Blob([u8arr], { type: mime }));
         }
     };
 
@@ -404,6 +593,9 @@
 
     // Auto-initialize when document is ready
     $(document).ready(function() {
+        // Load Zalo config after DOM is ready
+        ReservationCamera.loadZaloConfig();
+        // Then initialize
         ReservationCamera.init();
     });
 
