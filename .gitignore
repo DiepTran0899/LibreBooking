@@ -3,6 +3,7 @@
 # Configuration files with sensitive data
 app/config/config.php
 app/.env
+config.php
 
 # Compiled Smarty templates
 app/tpl_c/*

@@ -205,7 +205,8 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0);
             
-            const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            // Convert to WebP for better compression
+            const imageDataUrl = canvas.toDataURL('image/webp', 0.85);
             capturedImage.src = imageDataUrl;
             
             // Hide video, show captured image
@@ -243,7 +244,7 @@
                 ('0' + now.getDate()).slice(-2) + '_' +
                 ('0' + now.getHours()).slice(-2) + 
                 ('0' + now.getMinutes()).slice(-2) + 
-                ('0' + now.getSeconds()).slice(-2) + '.jpg';
+                ('0' + now.getSeconds()).slice(-2) + '.webp';
             
             this.addImageToPreview(imageDataUrl, fileName);
             
@@ -318,13 +319,43 @@
                 
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    self.addImageToPreview(e.target.result, file.name);
+                    // Convert images to WebP for better compression
+                    if (self.isImageFile(file.name)) {
+                        self.convertImageToWebP(e.target.result, file.name);
+                    } else {
+                        self.addImageToPreview(e.target.result, file.name);
+                    }
                 };
                 reader.readAsDataURL(file);
             });
             
             // Reset file input
             document.getElementById('photoFileInput').value = '';
+        },
+
+        /**
+         * Convert uploaded image to WebP format
+         */
+        convertImageToWebP: function(imageDataUrl, originalFileName) {
+            const self = this;
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                
+                // Convert to WebP with 85% quality
+                const webpDataUrl = canvas.toDataURL('image/webp', 0.85);
+                
+                // Change file extension to .webp
+                const newFileName = originalFileName.replace(/\.[^.]+$/, '.webp');
+                
+                self.addImageToPreview(webpDataUrl, newFileName);
+            };
+            img.src = imageDataUrl;
         },
 
         /**
