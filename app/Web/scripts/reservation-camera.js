@@ -497,8 +497,10 @@
                 // Send to Zalo API
                 fetch(self.zaloConfig.apiUrl, {
                     method: 'POST',
+                    headers: {
+                        'X-API-Key': self.zaloConfig.apiKey
+                    },
                     body: formData
-                    // No API key header needed - handled by server session
                 })
                 .then(function(response) {
                     if (!response.ok) {

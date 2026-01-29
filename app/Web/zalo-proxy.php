@@ -26,16 +26,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Session-based authentication (user must be logged in)
-session_start();
-if (!isset($_SESSION['user_id'])) {
+// Validate API Key from request header
+$requestApiKey = $_SERVER['HTTP_X_API_KEY'] ?? '';
+$validApiKey = 'zalo-api-secret-key-2026'; // Should match zalo-config.js
+
+if ($requestApiKey !== $validApiKey) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Unauthorized - login required']);
+    echo json_encode(['success' => false, 'error' => 'Invalid API key']);
     exit;
 }
 
-// Zalo API configuration (server-side only)
-$validApiKey = 'zalo-api-secret-key-2026'; // Only stored server-side
+// Zalo API configuration
 $zaloApiUrl = 'https://ntzl.kimthanh.co/v1/messages/send';
 
 // Prepare data to forward

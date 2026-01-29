@@ -9,8 +9,8 @@
         // Zalo API endpoint (via PHP proxy to bypass CORS)
         apiUrl: '/Web/zalo-proxy.php',
         
-        // API Key for authentication - REMOVED for security
-        // Key validation is done server-side only
+        // API Key for authentication
+        apiKey: 'zalo-api-secret-key-2026',
         
         // Recipient configuration
         // Option 1: Send to user (uncomment and set UID)
