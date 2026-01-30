@@ -26,24 +26,43 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Validate API Key from request header
-$requestApiKey = $_SERVER['HTTP_X_API_KEY'] ?? '';
-$validApiKey = 'zalo-api-secret-key-2026'; // Should match zalo-config.js
+// Load Zalo config (backend URL + API key)
+$configPath = dirname(__DIR__) . '/config/zalo.config.php';
+$zaloApiUrl = '';
+$validApiKey = '';
 
-if ($requestApiKey !== $validApiKey) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Invalid API key']);
+$proxyAuthToken = '';
+if (file_exists($configPath)) {
+    $loaded = include $configPath;
+    if (is_array($loaded)) {
+        $zaloApiUrl = isset($loaded['apiUrl']) ? trim($loaded['apiUrl']) : '';
+        $validApiKey = isset($loaded['apiKey']) ? trim($loaded['apiKey']) : '';
+        $proxyAuthToken = isset($loaded['proxyAuthToken']) ? trim($loaded['proxyAuthToken']) : '';
+    }
+}
+
+if (empty($zaloApiUrl) || empty($validApiKey)) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Zalo proxy: chưa cấu hình apiUrl/apiKey trong Cấu hình Zalo']);
     exit;
 }
 
-// Zalo API configuration
-$zaloApiUrl = 'https://ntzl.kimthanh.co/v1/messages/send';
+// Bảo mật: API key Zalo không gửi ra client. Proxy dùng $validApiKey khi gọi Zalo API.
+// Chấp nhận token từ header X-Proxy-Token hoặc POST proxy_token (một số server chặn header tùy chỉnh).
+if ($proxyAuthToken !== '') {
+    $requestToken = trim((string) ($_SERVER['HTTP_X_PROXY_TOKEN'] ?? $_POST['proxy_token'] ?? ''));
+    if ($requestToken !== $proxyAuthToken) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'error' => 'Invalid proxy token']);
+        exit;
+    }
+}
 
 // Prepare data to forward
 $postData = [];
 $files = [];
 
-// Get POST parameters
+// Get POST parameters (không forward proxy_token sang Zalo API)
 if (isset($_POST['text'])) {
     $postData['text'] = $_POST['text'];
 }
