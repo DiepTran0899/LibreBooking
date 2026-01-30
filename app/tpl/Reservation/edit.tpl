@@ -2,8 +2,8 @@
 
 {block name=header}
     {include file='globalheader.tpl' TitleKey='EditReservationHeading' TitleArgs='' cssFiles='css/schedule.css' printCssFiles='css/reservation.print.css'}
-    <script src="{$Path}scripts/zalo-config.js?v=32.0" type="text/javascript"></script>
-    <script src="{$Path}scripts/reservation-camera.js?v=32.0" type="text/javascript"></script>
+    <script src="{$Path}scripts/zalo-config.js?v=33.0" type="text/javascript"></script>
+    <script src="{$Path}scripts/reservation-camera.js?v=33.0" type="text/javascript"></script>
     <script type="text/javascript">
         var allowedExtensionsList = '{$AllowedAttachmentExtensionsList}';
     </script>

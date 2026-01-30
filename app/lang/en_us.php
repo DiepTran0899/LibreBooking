@@ -451,18 +451,18 @@ class en_us extends Language
         $strings['Saving'] = 'Đang lưu';
         $strings['Group'] = 'Nhóm';
         // Zalo Admin page (manage_zalo.tpl)
-        $strings['ZaloApiUrl'] = 'Zalo API URL';
-        $strings['ZaloApiUrlHelp'] = 'URL endpoint of the Zalo API server (Node.js) used to send messages.';
-        $strings['ZaloApiKeyHelp'] = 'API key used to authenticate from this application to the Zalo API server.';
-        $strings['ZaloDefaultUID'] = 'Default UID';
-        $strings['ZaloDefaultUIDHelp'] = 'Comma-separated list of UIDs for default message recipients, used when a resource has no specific configuration.';
-        $strings['ZaloDefaultGroupID'] = 'Default Group ID';
-        $strings['ZaloDefaultGroupIDHelp'] = 'Comma-separated list of Group IDs for default message recipients, used when a resource has no specific configuration.';
-        $strings['ZaloSendImageWithNotification'] = 'Send notification with image';
-        $strings['ZaloSendImageWithNotificationHelp'] = 'On: send both text and the captured image. Off: send text only (no image attachment).';
-        $strings['ZaloPerResourceJson'] = 'Per-resource configuration (JSON)';
-        $strings['ZaloPerResourceJsonFormat'] = 'Format:';
-        $strings['ZaloPerResourceJsonHelp'] = 'Key is the ResourceId (e.g. the value of the hidden input #primaryResourceId in the reservation form).';
+        $strings['ZaloApiUrl'] = 'URL API Zalo';
+        $strings['ZaloApiUrlHelp'] = 'Địa chỉ endpoint của máy chủ Zalo API (Node.js) dùng để gửi tin nhắn.';
+        $strings['ZaloApiKeyHelp'] = 'API key dùng để xác thực từ ứng dụng này tới máy chủ Zalo API.';
+        $strings['ZaloDefaultUID'] = 'UID mặc định';
+        $strings['ZaloDefaultUIDHelp'] = 'Danh sách UID người nhận mặc định, ngăn cách bằng dấu phẩy, sử dụng khi tài nguyên không có cấu hình riêng.';
+        $strings['ZaloDefaultGroupID'] = 'Group ID mặc định';
+        $strings['ZaloDefaultGroupIDHelp'] = 'Danh sách Group ID người nhận mặc định, ngăn cách bằng dấu phẩy, sử dụng khi tài nguyên không có cấu hình riêng.';
+        $strings['ZaloSendImageWithNotification'] = 'Gửi thông báo kèm hình ảnh';
+        $strings['ZaloSendImageWithNotificationHelp'] = 'Bật: gửi cả nội dung và ảnh chụp. Tắt: chỉ gửi nội dung (không kèm hình ảnh).';
+        $strings['ZaloPerResourceJson'] = 'Cấu hình từng tài nguyên (JSON)';
+        $strings['ZaloPerResourceJsonFormat'] = 'Định dạng:';
+        $strings['ZaloPerResourceJsonHelp'] = 'Key là ResourceId (ví dụ trường ẩn #primaryResourceId trên form đặt chỗ).';
         // End Zalo Notification
         
         $strings['Maximum'] = 'tối đa';
