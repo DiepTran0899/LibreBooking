@@ -22,6 +22,7 @@ class ManageZaloPage extends ActionPage
             $recipientUID = trim($this->GetForm('recipient_uid'));
             $recipientGroupID = trim($this->GetForm('recipient_group_id'));
             $perResourceJson = trim($this->GetForm('per_resource_json'));
+            $sendImageWithNotification = (bool) $this->GetForm('send_image_with_notification');
 
             $perResourceRecipients = [];
 
@@ -45,6 +46,7 @@ class ManageZaloPage extends ActionPage
                         'recipientGroupID' => $recipientGroupID,
                         'perResourceRecipients' => [],
                         'perResourceJson' => $perResourceJson,
+                        'sendImageWithNotification' => $sendImageWithNotification,
                     ]);
                     $this->Display('Admin/Zalo/manage_zalo.tpl');
                     return;
@@ -59,6 +61,7 @@ class ManageZaloPage extends ActionPage
                         'recipientGroupID' => $recipientGroupID,
                         'perResourceRecipients' => [],
                         'perResourceJson' => $perResourceJson,
+                        'sendImageWithNotification' => $sendImageWithNotification,
                     ]);
                     $this->Display('Admin/Zalo/manage_zalo.tpl');
                     return;
@@ -73,6 +76,7 @@ class ManageZaloPage extends ActionPage
                 'recipientUID' => $recipientUID,
                 'recipientGroupID' => $recipientGroupID,
                 'perResourceRecipients' => $perResourceRecipients,
+                'sendImageWithNotification' => $sendImageWithNotification,
             ];
             $existing = $this->LoadConfig();
             if (empty($existing['proxyAuthToken'])) {
@@ -123,6 +127,7 @@ class ManageZaloPage extends ActionPage
                     'recipientGroupID' => '',
                     'perResourceRecipients' => [],
                     'proxyAuthToken' => '',
+                    'sendImageWithNotification' => true,
                 ];
 
                 return array_merge($defaults, $loaded);
@@ -136,6 +141,7 @@ class ManageZaloPage extends ActionPage
             'recipientGroupID' => '',
             'perResourceRecipients' => [],
             'proxyAuthToken' => '',
+            'sendImageWithNotification' => true,
         ];
     }
 

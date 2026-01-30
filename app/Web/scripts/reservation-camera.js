@@ -538,26 +538,23 @@
                 console.debug('[Zalo Send] Final recipients - UID:', finalRecipientUID, 'GROUPID:', finalRecipientGroupID);
             }
             
-            // Convert base64 to Blob
-            this.base64ToBlob(this.currentCapturedImage.dataUrl, function(blob) {
-                // Create FormData
-                const formData = new FormData();
+            var includeImage = zaloConfig.sendImageWithNotification !== false;
+
+            function doSend(blobOrNull) {
+                var formData = new FormData();
                 formData.append('text', messageText);
-                formData.append('file', blob, self.currentCapturedImage.fileName);
-                
-                // Add recipient (ưu tiên theo resource nếu có)
+                if (includeImage && blobOrNull) {
+                    formData.append('file', blobOrNull, self.currentCapturedImage.fileName);
+                }
                 if (finalRecipientGroupID) {
                     formData.append('toGROUPID', finalRecipientGroupID);
                 }
                 if (finalRecipientUID) {
                     formData.append('toUID', finalRecipientUID);
                 }
-                // Token xác thực proxy (gửi trong body để tránh server chặn header tùy chỉnh)
                 if (zaloConfig.proxyAuthToken) {
                     formData.append('proxy_token', zaloConfig.proxyAuthToken);
                 }
-                
-                // Send to Zalo API (qua proxy cùng origin). API key Zalo không gửi từ client; proxy dùng key từ config.
                 fetch(zaloConfig.apiUrl, {
                     method: 'POST',
                     body: formData
@@ -579,17 +576,23 @@
                 .catch(function(error) {
                     console.error('Zalo send error:', error);
                     loadingToast.hide();
-                    
-                    let errorMsg = 'Lỗi kết nối Zalo API. ';
-                    if (error.message.includes('Failed to fetch')) {
+                    var errorMsg = 'Lỗi kết nối Zalo API. ';
+                    if (error.message.indexOf('Failed to fetch') !== -1) {
                         errorMsg += 'Kiểm tra:\n• Zalo server đã chạy?\n• CORS đã cấu hình?\n• URL/API Key đúng?';
                     } else {
                         errorMsg += error.message;
                     }
-                    
                     self.showToast('error', errorMsg, 8000);
                 });
-            });
+            }
+
+            if (includeImage && this.currentCapturedImage && this.currentCapturedImage.dataUrl) {
+                this.base64ToBlob(this.currentCapturedImage.dataUrl, function(blob) {
+                    doSend(blob);
+                });
+            } else {
+                doSend(null);
+            }
         },
 
         /**

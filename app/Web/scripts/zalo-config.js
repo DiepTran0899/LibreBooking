@@ -12,6 +12,7 @@
         recipientUID: '',
         recipientGroupID: '',
         perResourceRecipients: {},
+        sendImageWithNotification: true,
         // Message templates
         messages: {
             checkIn: '✅ Khách vào - ',
@@ -46,6 +47,7 @@
             window.ZaloConfig.recipientGroupID = serverConfig.recipientGroupID || '';
             window.ZaloConfig.perResourceRecipients = serverConfig.perResourceRecipients || {};
             window.ZaloConfig.proxyAuthToken = serverConfig.proxyAuthToken || '';
+            window.ZaloConfig.sendImageWithNotification = serverConfig.sendImageWithNotification !== false;
 
             if (typeof console !== 'undefined') {
                 console.info('[Zalo Config] Loaded configuration from server.');

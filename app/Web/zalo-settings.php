@@ -13,6 +13,7 @@ $defaults = [
     'recipientGroupID' => '',
     'perResourceRecipients' => [],
     'proxyAuthToken' => '',
+    'sendImageWithNotification' => true,
 ];
 
 $config = $defaults;

@@ -450,6 +450,19 @@ class en_us extends Language
         $strings['ZaloNote4'] = 'Service cần chạy liên tục để duy trì kết nối';
         $strings['Saving'] = 'Đang lưu';
         $strings['Group'] = 'Nhóm';
+        // Zalo Admin page (manage_zalo.tpl)
+        $strings['ZaloApiUrl'] = 'Zalo API URL';
+        $strings['ZaloApiUrlHelp'] = 'URL endpoint of the Zalo API server (Node.js) used to send messages.';
+        $strings['ZaloApiKeyHelp'] = 'API key used to authenticate from this application to the Zalo API server.';
+        $strings['ZaloDefaultUID'] = 'Default UID';
+        $strings['ZaloDefaultUIDHelp'] = 'Comma-separated list of UIDs for default message recipients, used when a resource has no specific configuration.';
+        $strings['ZaloDefaultGroupID'] = 'Default Group ID';
+        $strings['ZaloDefaultGroupIDHelp'] = 'Comma-separated list of Group IDs for default message recipients, used when a resource has no specific configuration.';
+        $strings['ZaloSendImageWithNotification'] = 'Send notification with image';
+        $strings['ZaloSendImageWithNotificationHelp'] = 'On: send both text and the captured image. Off: send text only (no image attachment).';
+        $strings['ZaloPerResourceJson'] = 'Per-resource configuration (JSON)';
+        $strings['ZaloPerResourceJsonFormat'] = 'Format:';
+        $strings['ZaloPerResourceJsonHelp'] = 'Key is the ResourceId (e.g. the value of the hidden input #primaryResourceId in the reservation form).';
         // End Zalo Notification
         
         $strings['Maximum'] = 'tối đa';

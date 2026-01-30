@@ -19,7 +19,7 @@
         <div class="card-body">
             <form id="frmZaloConfig" method="post" action="{$SCRIPT_NAME}?action=save" role="form">
                 <div class="mb-3">
-                    <label for="api_url" class="form-label fw-bold">URL API Zalo</label>
+                    <label for="api_url" class="form-label fw-bold">{translate key=ZaloApiUrl}</label>
                     <input type="text"
                            class="form-control"
                            id="api_url"
@@ -27,7 +27,7 @@
                            value="{$ZaloConfig.apiUrl|escape}"
                            placeholder="http://localhost:3000/v1/messages/send" />
                     <div class="form-text">
-                        URL endpoint của Zalo API server (Node.js) dùng để gửi tin nhắn.
+                        {translate key=ZaloApiUrlHelp}
                     </div>
                 </div>
 
@@ -39,12 +39,12 @@
                            name="api_key"
                            value="{$ZaloConfig.apiKey|escape}" />
                     <div class="form-text">
-                        API Key dùng để xác thực từ ứng dụng này tới Zalo API server.
+                        {translate key=ZaloApiKeyHelp}
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="recipient_uid" class="form-label fw-bold">UID mặc định</label>
+                    <label for="recipient_uid" class="form-label fw-bold">{translate key=ZaloDefaultUID}</label>
                     <input type="text"
                            class="form-control"
                            id="recipient_uid"
@@ -52,12 +52,12 @@
                            value="{$ZaloConfig.recipientUID|escape}"
                            placeholder="uid1,uid2,uid3" />
                     <div class="form-text">
-                        Danh sách UID nhận tin nhắn mặc định (cách nhau bởi dấu phẩy), dùng khi resource không có cấu hình riêng.
+                        {translate key=ZaloDefaultUIDHelp}
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="recipient_group_id" class="form-label fw-bold">GROUPID mặc định</label>
+                    <label for="recipient_group_id" class="form-label fw-bold">{translate key=ZaloDefaultGroupID}</label>
                     <input type="text"
                            class="form-control"
                            id="recipient_group_id"
@@ -65,21 +65,38 @@
                            value="{$ZaloConfig.recipientGroupID|escape}"
                            placeholder="gid1,gid2" />
                     <div class="form-text">
-                        Danh sách GROUPID nhận tin nhắn mặc định (cách nhau bởi dấu phẩy), dùng khi resource không có cấu hình riêng.
+                        {translate key=ZaloDefaultGroupIDHelp}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox"
+                               class="form-check-input"
+                               id="send_image_with_notification"
+                               name="send_image_with_notification"
+                               value="1"
+                               {if $ZaloConfig.sendImageWithNotification}checked="checked"{/if} />
+                        <label class="form-check-label fw-bold" for="send_image_with_notification">
+                            {translate key=ZaloSendImageWithNotification}
+                        </label>
+                    </div>
+                    <div class="form-text">
+                        {translate key=ZaloSendImageWithNotificationHelp}
                     </div>
                 </div>
 
                 <hr />
 
                 <div class="mb-3">
-                    <label for="per_resource_json" class="form-label fw-bold">Cấu hình theo ResourceId (JSON)</label>
+                    <label for="per_resource_json" class="form-label fw-bold">{translate key=ZaloPerResourceJson}</label>
                     <textarea class="form-control"
                               id="per_resource_json"
                               name="per_resource_json"
                               rows="12"
                               spellcheck="false">{$ZaloConfig.perResourceJson|escape}</textarea>
                     <div class="form-text">
-                        Định dạng:
+                        {translate key=ZaloPerResourceJsonFormat}
 <pre class="mb-0" style="white-space: pre; font-size: 0.85rem;">
 {
   "5": {
@@ -92,7 +109,7 @@
   }
 }
 </pre>
-                        Key là <strong>ResourceId</strong> (ví dụ giá trị của input ẩn <code>#primaryResourceId</code> trong form đặt chỗ).
+                        {translate key=ZaloPerResourceJsonHelp}
                     </div>
                 </div>
 
