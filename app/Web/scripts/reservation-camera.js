@@ -11,6 +11,8 @@
         allowedExtensions: [],
         currentCapturedImage: null,
         zaloConfig: {},
+        /** 'environment' = camera sau, 'user' = camera trước */
+        cameraFacingMode: 'environment',
         
         /**
          * Initialize the camera module
@@ -128,6 +130,10 @@
                 self.retakePhoto();
             });
 
+            $('#btnSwitchCamera').on('click', function() {
+                self.switchCamera();
+            });
+
             $('#btnSaveCapturedPhoto').on('click', function() {
                 self.saveCapturedPhoto();
             });
@@ -186,12 +192,13 @@
         },
 
         /**
-         * Initialize camera
+         * Initialize camera (dùng camera trước/sau theo this.cameraFacingMode)
          */
         initCamera: function() {
             const video = document.getElementById('cameraVideo');
+            const facingMode = this.cameraFacingMode || 'environment';
             const constraints = {
-                video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
+                video: { facingMode: facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } }
             };
             
             const self = this;
@@ -204,6 +211,15 @@
                     console.error('Camera error:', err);
                     alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập camera.');
                 });
+        },
+
+        /**
+         * Chuyển đổi camera (trước ↔ sau)
+         */
+        switchCamera: function() {
+            this.cameraFacingMode = this.cameraFacingMode === 'environment' ? 'user' : 'environment';
+            this.stopCamera();
+            this.initCamera();
         },
 
         /**
@@ -240,6 +256,8 @@
             video.style.display = 'none';
             document.getElementById('capturedImageContainer').style.display = 'block';
             document.getElementById('btnTakePhoto').style.display = 'none';
+            const btnSwitch = document.getElementById('btnSwitchCamera');
+            if (btnSwitch) btnSwitch.style.display = 'none';
             document.getElementById('btnRetakePhoto').style.display = 'inline-block';
             
             // Show Zalo action buttons instead of single Save button
@@ -259,6 +277,8 @@
             video.style.display = 'block';
             document.getElementById('capturedImageContainer').style.display = 'none';
             document.getElementById('btnTakePhoto').style.display = 'inline-block';
+            const btnSwitch = document.getElementById('btnSwitchCamera');
+            if (btnSwitch) btnSwitch.style.display = 'inline-block';
             document.getElementById('btnRetakePhoto').style.display = 'none';
             
             const zaloButtons = document.getElementById('zaloActionButtons');
@@ -305,6 +325,8 @@
             video.style.display = 'block';
             document.getElementById('capturedImageContainer').style.display = 'none';
             document.getElementById('btnTakePhoto').style.display = 'inline-block';
+            const btnSwitch = document.getElementById('btnSwitchCamera');
+            if (btnSwitch) btnSwitch.style.display = 'inline-block';
             document.getElementById('btnRetakePhoto').style.display = 'none';
             
             const zaloButtons = document.getElementById('zaloActionButtons');

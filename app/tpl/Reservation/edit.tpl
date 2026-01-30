@@ -261,6 +261,9 @@
                                 <button type="button" class="btn btn-secondary" id="btnRetakePhoto" style="display:none;">
                                     <i class="bi bi-arrow-counterclockwise"></i> {translate key='RetakePhoto'}
                                 </button>
+                                <button type="button" class="btn btn-outline-primary" id="btnSwitchCamera" title="{translate key='SwitchCamera'}">
+                                    <i class="bi bi-camera-video"></i> {translate key='SwitchCamera'}
+                                </button>
                                 <button type="button" class="btn btn-primary" id="btnTakePhoto">
                                     <i class="bi bi-camera"></i> {translate key='TakePhoto'}
                                 </button>
