@@ -391,7 +391,8 @@ class vn_vn extends en_gb
         // Camera Feature
         $strings['CapturePhoto'] = 'Capture Photo';
         $strings['TakePhoto'] = 'Take Photo';
-        $strings['RetakePhoto'] = 'Retake';
+        $strings['RetakePhoto'] = 'Chụp lại';
+        $strings['SwitchCamera'] = 'Đổi camera';
         $strings['SavePhoto'] = 'Save Photo';
         $strings['CameraTitle'] = 'Capture Photo from Camera';
         $strings['CameraAccessDenied'] = 'Unable to access camera. Please check camera permissions.';

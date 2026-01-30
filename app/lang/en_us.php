@@ -393,6 +393,7 @@ class en_us extends Language
         $strings['CapturePhoto'] = 'Chụp hình';
         $strings['TakePhoto'] = 'Chụp hình';
         $strings['RetakePhoto'] = 'Chụp lại';
+        $strings['SwitchCamera'] = 'Switch camera';
         $strings['SavePhoto'] = 'Lưu hình';
         $strings['CameraTitle'] = 'Chụp hình từ camera';
         $strings['CameraAccessDenied'] = 'Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập camera.';
