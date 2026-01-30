@@ -363,6 +363,9 @@
                                                 href="{$Path}admin/manage_configuration.php">{translate key="ManageConfiguration"}</a>
                                         </li>
                                     {/if}
+                                    <li id="navManageZalo"><a class="dropdown-item"
+                                            href="{$Path}admin/manage_zalo.php">{translate key="ZaloConfiguration"}</a>
+                                    </li>
                                     <li id="navEmailTemplates"><a class="dropdown-item"
                                             href="{$Path}admin/manage_email_templates.php">{translate key="ManageEmailTemplates"}</a>
                                     </li>

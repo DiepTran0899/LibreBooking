@@ -28,7 +28,7 @@
                 this.zaloConfig = window.ZaloConfig;
             } else {
                 console.warn('[ReservationCamera] Zalo config not found. Zalo features disabled.');
-                this.zaloConfig = { apiUrl: '', apiKey: '', recipientUID: '', recipientGroupID: '' };
+                this.zaloConfig = { apiUrl: '', apiKey: '', recipientUID: '', recipientGroupID: '', perResourceRecipients: {} };
             }
         },
         
@@ -458,9 +458,14 @@
                 return;
             }
             
-            // Validate configuration
-            if (!this.zaloConfig.recipientUID && !this.zaloConfig.recipientGroupID) {
-                alert('Chưa cấu hình người nhận Zalo. Vui lòng liên hệ admin.');
+            // ⚠️ QUAN TRỌNG: Luôn đọc config mới nhất từ window.ZaloConfig (được update bởi fetch)
+            // thay vì dùng this.zaloConfig (có thể đã cũ vì được copy lúc DOM ready)
+            const zaloConfig = (typeof window.ZaloConfig !== 'undefined' && window.ZaloConfig) 
+                ? window.ZaloConfig 
+                : this.zaloConfig;
+            
+            if (!zaloConfig || !zaloConfig.apiUrl) {
+                alert('Chưa cấu hình Zalo API. Vui lòng liên hệ admin.');
                 return;
             }
             
@@ -471,35 +476,87 @@
             const reservationTitle = ($('#reservationTitle').val() || 'Không có tiêu đề').trim();
             const resourceName = ($('.resourceDetails').first().text() || 'Không rõ').trim();
             const ownerName = ($('#userName').text() || 'Không rõ').trim();
+            const primaryResourceId = ($('#primaryResourceId').val() || '').toString().trim();
             
             // Prepare message text with reservation details
             const actionText = type === 'checkin' 
-                ? this.zaloConfig.messages.checkIn.trim()
-                : this.zaloConfig.messages.checkOut.trim();
+                ? (zaloConfig.messages && zaloConfig.messages.checkIn ? zaloConfig.messages.checkIn.trim() : '✅ Khách vào - ')
+                : (zaloConfig.messages && zaloConfig.messages.checkOut ? zaloConfig.messages.checkOut.trim() : '🚪 Khách ra - ');
             
             const messageText = actionText + ' ' + new Date().toLocaleString('vi-VN') + '\n📋 Tiêu đề: ' + reservationTitle + '\n🏢 Tài nguyên: ' + resourceName + '\n👤 Người đặt: ' + ownerName;
             
-            // Convert base64 to Blob
-            this.base64ToBlob(this.currentCapturedImage.dataUrl, function(blob) {
-                // Create FormData
-                const formData = new FormData();
+            // Xác định danh sách người nhận theo resource (nếu có), nếu không thì dùng cấu hình global
+            let finalRecipientUID = (zaloConfig.recipientUID || '').toString().trim();
+            let finalRecipientGroupID = (zaloConfig.recipientGroupID || '').toString().trim();
+
+            if (zaloConfig.perResourceRecipients && typeof zaloConfig.perResourceRecipients === 'object') {
+                let resourceConfig = null;
+
+                // 1️⃣ Ưu tiên match theo ResourceId (an toàn hơn tên)
+                if (primaryResourceId) {
+                    resourceConfig = zaloConfig.perResourceRecipients[primaryResourceId] || 
+                                    zaloConfig.perResourceRecipients[primaryResourceId.toString()];
+                }
+
+                // 2️⃣ Nếu không có theo Id, thử match theo tên hiển thị chính xác
+                if (!resourceConfig && resourceName) {
+                    resourceConfig = zaloConfig.perResourceRecipients[resourceName];
+                }
+
+                // 3️⃣ Nếu vẫn không có, thử match theo key lower-case (cho dễ cấu hình)
+                if (!resourceConfig && resourceName) {
+                    const normalizedName = resourceName.toLowerCase().trim();
+                    Object.keys(zaloConfig.perResourceRecipients).forEach(function(key) {
+                        if (!resourceConfig && key.toLowerCase().trim() === normalizedName) {
+                            resourceConfig = zaloConfig.perResourceRecipients[key];
+                        }
+                    });
+                }
+
+                if (resourceConfig) {
+                    // Nếu resource có cấu hình riêng thì LUÔN dùng cấu hình đó,
+                    // kể cả khi chuỗi là rỗng (cho phép "tắt" UID hoặc GROUPID cho resource đó).
+                    if (Object.prototype.hasOwnProperty.call(resourceConfig, 'recipientUID')) {
+                        finalRecipientUID = (resourceConfig.recipientUID || '').toString().trim();
+                    }
+                    if (Object.prototype.hasOwnProperty.call(resourceConfig, 'recipientGroupID')) {
+                        finalRecipientGroupID = (resourceConfig.recipientGroupID || '').toString().trim();
+                    }
+                }
+            }
+
+            // Validate configuration sau khi đã áp dụng per-resource
+            if (!finalRecipientUID && !finalRecipientGroupID) {
+                loadingToast.hide();
+                alert('Chưa cấu hình người nhận Zalo cho tài nguyên này và cũng không có cấu hình mặc định. Vui lòng liên hệ admin.');
+                return;
+            }
+            
+            // Debug logging (có thể xóa sau khi test xong)
+            if (typeof console !== 'undefined' && console.debug) {
+                console.debug('[Zalo Send] ResourceId:', primaryResourceId);
+                console.debug('[Zalo Send] Final recipients - UID:', finalRecipientUID, 'GROUPID:', finalRecipientGroupID);
+            }
+            
+            var includeImage = zaloConfig.sendImageWithNotification !== false;
+
+            function doSend(blobOrNull) {
+                var formData = new FormData();
                 formData.append('text', messageText);
-                formData.append('file', blob, self.currentCapturedImage.fileName);
-                
-                // Add recipient
-                if (self.zaloConfig.recipientGroupID) {
-                    formData.append('toGROUPID', self.zaloConfig.recipientGroupID);
+                if (includeImage && blobOrNull) {
+                    formData.append('file', blobOrNull, self.currentCapturedImage.fileName);
                 }
-                if (self.zaloConfig.recipientUID) {
-                    formData.append('toUID', self.zaloConfig.recipientUID);
+                if (finalRecipientGroupID) {
+                    formData.append('toGROUPID', finalRecipientGroupID);
                 }
-                
-                // Send to Zalo API
-                fetch(self.zaloConfig.apiUrl, {
+                if (finalRecipientUID) {
+                    formData.append('toUID', finalRecipientUID);
+                }
+                if (zaloConfig.proxyAuthToken) {
+                    formData.append('proxy_token', zaloConfig.proxyAuthToken);
+                }
+                fetch(zaloConfig.apiUrl, {
                     method: 'POST',
-                    headers: {
-                        'X-API-Key': self.zaloConfig.apiKey
-                    },
                     body: formData
                 })
                 .then(function(response) {
@@ -519,17 +576,23 @@
                 .catch(function(error) {
                     console.error('Zalo send error:', error);
                     loadingToast.hide();
-                    
-                    let errorMsg = 'Lỗi kết nối Zalo API. ';
-                    if (error.message.includes('Failed to fetch')) {
+                    var errorMsg = 'Lỗi kết nối Zalo API. ';
+                    if (error.message.indexOf('Failed to fetch') !== -1) {
                         errorMsg += 'Kiểm tra:\n• Zalo server đã chạy?\n• CORS đã cấu hình?\n• URL/API Key đúng?';
                     } else {
                         errorMsg += error.message;
                     }
-                    
                     self.showToast('error', errorMsg, 8000);
                 });
-            });
+            }
+
+            if (includeImage && this.currentCapturedImage && this.currentCapturedImage.dataUrl) {
+                this.base64ToBlob(this.currentCapturedImage.dataUrl, function(blob) {
+                    doSend(blob);
+                });
+            } else {
+                doSend(null);
+            }
         },
 
         /**

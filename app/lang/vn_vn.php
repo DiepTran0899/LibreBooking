@@ -449,6 +449,19 @@ class vn_vn extends en_gb
         $strings['ZaloNote4'] = 'Service cần chạy liên tục để duy trì kết nối';
         $strings['Saving'] = 'Đang lưu';
         $strings['Group'] = 'Nhóm';
+        // Zalo Admin page (manage_zalo.tpl)
+        $strings['ZaloApiUrl'] = 'URL API Zalo';
+        $strings['ZaloApiUrlHelp'] = 'URL endpoint của Zalo API server (Node.js) dùng để gửi tin nhắn.';
+        $strings['ZaloApiKeyHelp'] = 'API Key dùng để xác thực từ ứng dụng này tới Zalo API server.';
+        $strings['ZaloDefaultUID'] = 'UID mặc định';
+        $strings['ZaloDefaultUIDHelp'] = 'Danh sách UID nhận tin nhắn mặc định (cách nhau bởi dấu phẩy), dùng khi resource không có cấu hình riêng.';
+        $strings['ZaloDefaultGroupID'] = 'GROUPID mặc định';
+        $strings['ZaloDefaultGroupIDHelp'] = 'Danh sách GROUPID nhận tin nhắn mặc định (cách nhau bởi dấu phẩy), dùng khi resource không có cấu hình riêng.';
+        $strings['ZaloSendImageWithNotification'] = 'Gửi thông báo kèm hình ảnh';
+        $strings['ZaloSendImageWithNotificationHelp'] = 'Bật: gửi cả nội dung text và ảnh vừa chụp. Tắt: chỉ gửi nội dung text (không đính kèm ảnh).';
+        $strings['ZaloPerResourceJson'] = 'Cấu hình theo ResourceId (JSON)';
+        $strings['ZaloPerResourceJsonFormat'] = 'Định dạng:';
+        $strings['ZaloPerResourceJsonHelp'] = 'Key là ResourceId (ví dụ giá trị của input ẩn #primaryResourceId trong form đặt chỗ).';
         // End Zalo Notification
         
         $strings['Maximum'] = 'max';
